@@ -15,10 +15,14 @@ var BOT_STATS = {
   ]
 };
 
-var CHANNEL_ID = 'G0DED7GRJ';
+var CHANNEL = 'test';
 
+var COUNT_PHRASES = [
+  'count bitch!',
+  'каунтбич'
+];
 
-var GREETINGS = [
+var GREETINGS_PHRASES = [
   'Привет, котятки! Я снова с вами.',
   'А вот и я!',
   'Поднимите мне веки!',
@@ -26,27 +30,27 @@ var GREETINGS = [
   'Мааам, ну еще 5 минут!'
 ];
 
-var BYE = [
+var BYE_PHRASES = [
   'Моя работа здесь закончена. До следующего раза, пока!',
   'Ну наконец-то все закончено!',
   'Надеюсь, оно того стоило. Расскажите потом.',
   'Приятного прослушивания, дети.'
 ];
 
-function getRandomInt(min, max) {
+function getRandom(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
 function choose(arr) {
-  return arr[getRandomInt(0, arr.length)];
+  return arr[getRandom(0, arr.length)];
 }
 
-function greetings() {
-  return bot.postTo(CHANNEL_ID, choose(GREETINGS), BOT_STATS);
+function sayGreetings() {
+  return bot.postTo(CHANNEL, choose(GREETINGS_PHRASES), BOT_STATS);
 }
 
-function bye() {
-  return bot.postTo(CHANNEL_ID, choose(BYE), BOT_STATS);
+function sayBye() {
+  return bot.postTo(CHANNEL, choose(BYE_PHRASES), BOT_STATS);
 }
 
 function count(i, upper, channel) {
@@ -58,32 +62,31 @@ function count(i, upper, channel) {
       count(i + 1, upper, channel);
     }, 2000);
   }
-
 }
 
-process.on('SIGINT', function() {
-  bye().then(process.exit, process.exit);
-});
-
-greetings();
-
-bot.on('message', function(data) {
-  console.log(data);
-
-  if (data.type === 'message' && data.subtype !== 'bot_message') {
-    if (/^count bitch!$/.test(data.text)) {
-      setTimeout(function () {
-        count(1, 3, data.channel);
+function trackIncomingMessages(channel) {
+  var channelId;
+  bot.getGroup(channel)
+    .then(function (data) {
+      channelId = data.id;
+    }).then(function () {
+      bot.on('message', function(data) {
+        console.log(data);
+        if (data.channel === channelId && data.type === 'message' && data.subtype !== 'bot_message') {
+          if (/^count bitch!$/.test(data.text)) {
+            setTimeout(function () {
+              count(1, 3, channel);
+            }, 1000);
+          }
+        }
       });
-    }
-  }
+    });
+}
 
-  /*// more information about additional params https://api.slack.com/methods/chat.postMessage
-  var params = {
-    icon_emoji: ':cat:'
-  };
+sayGreetings();
 
-  bot.postMessageToChannel('general', 'meow!', params);
-  bot.postMessageToUser('username', 'meow!', params);
-  bot.postMessageToGroup('private_group', 'meow!', params);*/
+trackIncomingMessages(CHANNEL);
+
+process.on('SIGINT', function() {
+  sayBye().then(process.exit, process.exit);
 });
