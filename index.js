@@ -17,12 +17,36 @@ var BOT_STATS = {
 
 var CHANNEL_ID = 'G0DED7GRJ';
 
+
+var GREETINGS = [
+  'Привет, котятки! Я снова с вами.',
+  'А вот и я!',
+  'Поднимите мне веки!',
+  'А не пойти бы вам с вашими сетчками? Лааадно, помогу.',
+  'Мааам, ну еще 5 минут!'
+];
+
+var BYE = [
+  'Моя работа здесь закончена. До следующего раза, пока!',
+  'Ну наконец-то все закончено!',
+  'Надеюсь, оно того стоило. Расскажите потом.',
+  'Приятного прослушивания, дети.'
+];
+
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min)) + min;
+}
+
+function choose(arr) {
+  return arr[getRandomInt(0, arr.length)];
+}
+
 function greetings() {
-  return bot.postTo(CHANNEL_ID, 'Привет, котятки! Я снова с вами.', BOT_STATS);
+  return bot.postTo(CHANNEL_ID, choose(GREETINGS), BOT_STATS);
 }
 
 function bye() {
-  return bot.postTo(CHANNEL_ID, 'Моя работа здесь закончена. До следующего раза, пока!', BOT_STATS);
+  return bot.postTo(CHANNEL_ID, choose(BYE), BOT_STATS);
 }
 
 function count(i, upper, channel) {
