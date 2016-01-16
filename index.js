@@ -1,4 +1,5 @@
 var SlackBot = require('slackbots');
+var _ = require('lodash');
 
 var BOTS_HASH = {
   'joy': 'xoxb-7994322839-rXfpbNeCkGcGJrHTbtupfpx1'
@@ -8,6 +9,7 @@ var bot = new SlackBot({
   token: BOTS_HASH['joy'],
   name: 'Дух Радости'
 });
+
 var BOT_STATS = {
   icon_url: 'https://s3-us-west-2.amazonaws.com/slack-files2/avatars/2015-07-21/7994648307_3d28e08b8cc29e28cef9_48.jpg',
   attachments: [
@@ -15,11 +17,15 @@ var BOT_STATS = {
   ]
 };
 
-var CHANNEL = 'test';
+var CHANNEL = 'count_bitch';
 
 var COUNT_PHRASES = [
   'count bitch!',
   'каунтбич'
+];
+
+var READY_PHRASES = [
+  'редибич'
 ];
 
 var GREETINGS_PHRASES = [
@@ -66,17 +72,49 @@ function count(i, upper, channel) {
 
 function trackIncomingMessages(channel) {
   var channelId;
+
+  var readyBitches = {};
+  var members;
+
   bot.getGroup(channel)
     .then(function (data) {
       channelId = data.id;
+      console.log('GROUP', data);
+
+      members = data.members;
+
+      data.members.forEach(function (member) {
+        readyBitches[member] = false;
+      });
+
     }).then(function () {
       bot.on('message', function(data) {
         console.log(data);
         if (data.channel === channelId && data.type === 'message' && data.subtype !== 'bot_message') {
-          if (/^count bitch!$/.test(data.text)) {
-            setTimeout(function () {
-              count(1, 3, channel);
-            }, 1000);
+
+          var success = false;
+          READY_PHRASES.forEach(function (phrase) {
+            if (phrase === data.text) {
+              success = true;
+            }
+          });
+
+          if (success) {
+            readyBitches[data.user] = true;
+
+            console.log('READY', readyBitches);
+
+            var readyUsersCount = _(readyBitches).map(function (readyBitch) {
+              return readyBitch;
+            }).filter(function (value) {
+              return value;
+            }).value().length;
+
+            if (readyUsersCount === members.length - 1) {
+              setTimeout(function () {
+                count(1, 3, channel);
+              }, 1000);
+            }
           }
         }
       });
