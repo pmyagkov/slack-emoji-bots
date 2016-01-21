@@ -2,7 +2,7 @@ var SlackBot = require('slackbots');
 var _ = require('lodash');
 
 var BOTS_HASH = {
-  'joy': 'xoxb-7994322839-rXfpbNeCkGcGJrHTbtupfpx1'
+  'joy': 'xoxb-7994322839-hnGZsJCAJykfRObonNEfL7n8'
 };
 
 var bot = new SlackBot({
@@ -19,13 +19,9 @@ var BOT_STATS = {
 
 var CHANNEL = 'count_bitch';
 
-var COUNT_PHRASES = [
-  'count bitch!',
-  'каунтбич'
-];
-
 var READY_PHRASES = [
-  'редибич'
+  'редибич',
+  'редибиченька'
 ];
 
 var GREETINGS_PHRASES = [
@@ -73,7 +69,7 @@ function count(i, upper, channel) {
 function trackIncomingMessages(channel) {
   var channelId;
 
-  var readyBitches = {};
+  var readyBitches = [];
   var members;
 
   bot.getGroup(channel)
@@ -83,36 +79,23 @@ function trackIncomingMessages(channel) {
 
       members = data.members;
 
-      data.members.forEach(function (member) {
-        readyBitches[member] = false;
-      });
-
     }).then(function () {
       bot.on('message', function(data) {
         console.log(data);
         if (data.channel === channelId && data.type === 'message' && data.subtype !== 'bot_message') {
 
-          var success = false;
-          READY_PHRASES.forEach(function (phrase) {
-            if (phrase === data.text) {
-              success = true;
+          if (_.includes(READY_PHRASES, data.text)) {
+            if (!_.includes(readyBitches, data.user)) {
+              readyBitches.push(data.user);
             }
-          });
-
-          if (success) {
-            readyBitches[data.user] = true;
 
             console.log('READY', readyBitches);
 
-            var readyUsersCount = _(readyBitches).map(function (readyBitch) {
-              return readyBitch;
-            }).filter(function (value) {
-              return value;
-            }).value().length;
-
-            if (readyUsersCount === members.length - 1) {
+            if (readyBitches.length === members.length - 1) {
               setTimeout(function () {
                 count(1, 3, channel);
+                // clear ready bitches
+                readyBitches = [];
               }, 1000);
             }
           }
