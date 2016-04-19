@@ -2,7 +2,7 @@ var SlackBot = require('slackbots');
 var _ = require('lodash');
 
 var BOTS_HASH = {
-  'joy': 'xoxb-7994322839-hnGZsJCAJykfRObonNEfL7n8'
+  'joy': 'xoxb-7994322839-vl34YtZoQjo7dPeingNRL7fQ'
 };
 
 var bot = new SlackBot({
@@ -55,6 +55,10 @@ function sayBye() {
   return bot.postTo(CHANNEL, choose(BYE_PHRASES), BOT_STATS);
 }
 
+function say(phrase) {
+  return bot.postTo(CHANNEL, phrase, BOT_STATS);
+}
+
 function count(i, upper, channel) {
   bot.postTo(channel, '' + i, BOT_STATS);
 
@@ -87,6 +91,7 @@ function trackIncomingMessages(channel) {
           if (_.includes(READY_PHRASES, data.text)) {
             if (!_.includes(readyBitches, data.user)) {
               readyBitches.push(data.user);
+              say('Принято!');
             }
 
             console.log('READY', readyBitches);
