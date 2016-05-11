@@ -2,7 +2,7 @@ var SlackBot = require('slackbots');
 var _ = require('lodash');
 
 var BOTS_HASH = {
-  'joy': 'xoxb-7994322839-vl34YtZoQjo7dPeingNRL7fQ'
+  'joy': 'xoxb-7994322839-' + '2rOADNy2StlcRbu0mjLELmpG'
 };
 
 var bot = new SlackBot({
