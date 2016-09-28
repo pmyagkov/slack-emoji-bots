@@ -1,0 +1,6 @@
+#! /bin/bash
+
+slack-cleaner --message --token `cat marmeladovaya_token` --direct hatebro --user shelterfish --perform &
+slack-cleaner --message --token `cat hatebro_token` --direct shelterfish --user hatebro --perform &
+wait
+

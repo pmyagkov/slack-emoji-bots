@@ -10,6 +10,6 @@
   "license": "ISC",
   "dependencies": {
     "lodash": "^4.0.0",
-    "slackbots": "^0.5.1"
+    "slackbots": "*"
   }
 }
